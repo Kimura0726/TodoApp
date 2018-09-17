@@ -1,7 +1,20 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar, Platform, ScrollView, FlatList, TextInput, Button, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, 
+  Text, 
+  View, 
+  StatusBar, 
+  Platform, 
+  ScrollView, 
+  FlatList, 
+  TextInput, 
+  Button, 
+  KeyboardAvoidingView,
+  AsyncStorage
+} from 'react-native';
 
 const STATUSBAR_HEIGHT = Platform.OS == 'ios' ? 20 : StatusBar.currentHeight;
+// TODOを保持するKey/Valueストアのキーを定義
+const TODO = "@todoapp.todo"
 
 export default class App extends React.Component {
   constructor(props) {
@@ -10,6 +23,34 @@ export default class App extends React.Component {
       todo: [], // Todoリストを空に
       currentIndex: 0,
       inputText: "", // テキスト入力用の箱を用意
+    }
+  }
+
+  // コンポーネントがマウントされた段階で読み込みを行う
+  componentDiaMount(){
+    this.loadTodo()
+  }
+
+  // AsyncStorageからTODOを読み込む処理
+  loadTodo = async () =>{
+    try{
+      const todoString = await AsyncStorage.getItem(TODO)
+      if(todoString){
+        const todo = JSON.parse(todoString)
+        const currentIndex = todo.length
+        this.setState({todo: todo, currentIndex: currentIndex})
+      }
+    }catch(e){
+      console.log(e)      
+    }
+  }
+
+  saveTodo = async (todo) => {
+    try {
+      const todoString = JSON.stringify(todo)
+      await AsyncStorage.getItem(TODO, todoString)
+    } catch(e){
+      console.log(e)
     }
   }
 
@@ -27,6 +68,8 @@ export default class App extends React.Component {
       currentIndex: index,
       inputText: ""
     })
+    // SaveTodoを呼んで保存する
+    this.saveTodo(todo)
   }
 
   render() {
@@ -35,7 +78,7 @@ export default class App extends React.Component {
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         {/* フィルターの部分 */}
         <View style={styles.filter}>
-          <Text>Filterがここに配置されます</Text>
+          <Text>Filterがここに配置されます！</Text>
         </View>
         {/* TODOリスト */}
         <ScrollView style={styles.todolist}>
