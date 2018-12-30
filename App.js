@@ -34,7 +34,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      todo: [], // Todoリストを空に
+      todo: [], // Todoリストを空にする
       currentIndex: 0,
       inputText: "", // テキスト入力用の箱を用意
       filterText: "", // filter用のテキストを追加
